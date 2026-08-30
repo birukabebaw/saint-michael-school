@@ -55,7 +55,7 @@ app.get('/', (req, res) => {
 app.post('/api/admin/login', (req, res) => {
     const { password } = req.body;
     
-    // እዚህ ጋር የአስተዳዳሪውን የይለፍ ቃል ማስተካከል ይችላሉ
+    // እዚህ ጋር የአስተዳዳሪውን የይለፍ ቃል ማስተካከል ይችላሉ (ለምሳሌ: 'admin123')
     const ADMIN_PASSWORD = 'admin123'; 
 
     if (password === ADMIN_PASSWORD) {
@@ -63,6 +63,17 @@ app.post('/api/admin/login', (req, res) => {
     } else {
         res.status(401).json({ success: false, error: 'የይለፍ ቃሉ ስህተት ነው!' });
     }
+});
+
+// Admin Get All Students API Route (for the table display)
+app.get('/api/admin/students', (req, res) => {
+    db.all("SELECT * FROM students ORDER BY id DESC", [], (err, rows) => {
+        if (err) {
+            console.error('Database error:', err.message);
+            return res.status(500).json({ error: 'ሰርቨር ስህተት ተፈጥሯል' });
+        }
+        res.json(rows);
+    });
 });
 
 // Result / Receipt Check API Route

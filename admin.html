@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>የአስተዳዳሪ ገጽ - Saint Michael School</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1e3a8a; }
-        .login-box, .admin-content { margin-top: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1e3a8a; margin-bottom: 20px; }
+        .login-box { max-width: 400px; margin: 40px auto; padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
         input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #1e3a8a; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
         button:hover { background-color: #1e40af; }
         #errorMsg { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
-        .admin-content { display: none; }
+        .admin-content { display: none; margin-top: 20px; }
+        .admin-content h3 { color: #8b0000; margin-bottom: 5px; font-size: 20px; }
+        .admin-content p { color: #555; margin-bottom: 20px; font-size: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px; }
+        th { background-color: #1e3a8a; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
     </style>
 </head>
 <body>
@@ -34,8 +40,24 @@
 
         <!-- ትክክለኛውን የይለፍ ቃል ከገባ በኋላ የሚታየው የአስተዳዳሪ ዳሽቦርድ -->
         <div id="adminContent" class="admin-content">
-            <h3>እንኳን ደህና መጡ፣ አስተዳዳሪ!</h3>
+            <h3>እንኳን ደህና መጡ፥ አስተዳዳሪ!</h3>
             <p>የተመዘገቡ ተማሪዎች እና ሪሲፕቶች እዚህ ይታያሉ (እዚህ ጋር ሰንጠረዡን ወይም መረጃ ማሳያውን ያስገቡ)</p>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>የተማሪ መለያ (ID)</th>
+                            <th>ሙሉ ስም (Full Name)</th>
+                            <th>ክፍል (Grade/Sec)</th>
+                            <th>የባንክ ሪሲፕት ስም</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- መረጃዎች በሰርቨር በኩል በጃቫስክሪፕት ይሞላሉ -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -50,7 +72,6 @@
             }
 
             try {
-                // ሰርቨር ላይ የይለፍ ቃሉን ማረጋገጥ
                 const response = await fetch('/api/admin/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -64,13 +85,43 @@
                     return;
                 }
 
-                // የይለፍ ቃሉ ትክክል ከሆነ ሎጊን ቦክሱን ደብቆ አድሚን ኮንቴንቱን ማሳየት
+                // ሎጊን ስኬት ሲሆን
                 document.getElementById('loginBox').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
+
+                // የተማሪዎችን መረጃ ከሰርቨር ማምጣት
+                loadStudents();
 
             } catch (error) {
                 console.error('ስህተት:', error);
                 errorMsg.innerText = 'ከሰርቨር ጋር መገናኘት አልተቻለም';
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                const response = await fetch('/api/admin/students');
+                const students = await response.json();
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+
+                if (students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">ምንም የተመዘገበ ተማሪ የለም</td></tr>';
+                    return;
+                }
+
+                students.forEach(student => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${student.studentId || '-'}</td>
+                        <td>${student.fullName || '-'}</td>
+                        <td>${student.grade || ''} ${student.section || ''}</td>
+                        <td>${student.receiptFileName || 'አልተገኘም'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('ተማሪዎችን ማምጣት አልተቻለም:', error);
             }
         }
     </script>
