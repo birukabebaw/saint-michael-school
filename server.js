@@ -13,7 +13,7 @@ app.use(cors({ origin: '*', methods: ['GET', 'POST'], allowedHeaders: ['Content-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// ስታቲክ ፋይሎችን (HTML, CSS, Images) ከፎልደሩ ማንበብ እንዲችል
+// ስታቲክ ፋይሎችን ማንበብ እንዲችል
 app.use(express.static(__dirname));
 
 // የ SQLite ዳታቤዝ ማገናኛ
@@ -36,9 +36,61 @@ db.run(`CREATE TABLE IF NOT EXISTS students (
     rank TEXT
 )`);
 
-// 1. መነሻ ገጹን (Homepage) በሊንኩ ሲከፈት ማሳየት
+// 1. መነሻ ገጹን (Homepage) ማሳየት
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
+});
+
+// 2. የኤክሴል ፋይል ተቀብሎ ዳታቤዝ ውስጥ መመዝገቢያ አድራሻ (API Route)
+app.post('/api/upload', (req, res) => {
+    try {
+        const { fileData } = req.body;
+        if (!fileData) {
+            return res.status(400).json({ error: 'እባክዎ ፋይል ይምረጡ!' });
+        }
+
+        const buffer = Buffer.from(fileData, 'base64');
+        const workbook = XLSX.read(buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+
+        if (!rows || rows.length === 0) {
+            return res.status(400).json({ error: 'የኤክሴል ፋይሉ ባዶ ነው!' });
+        }
+
+        const stmt = db.prepare(`INSERT OR REPLACE INTO students (studentId, fullName, grade, section, maths, english, amharic, total, average, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+
+        let count = 0;
+        rows.forEach(row => {
+            const studentId = row.studentId || row.StudentId || row.ID || row.id;
+            const fullName = row.fullName || row.FullName || row.Name || row.name;
+            const grade = row.grade || row.Grade || '';
+            const section = row.section || row.Section || '';
+            const maths = row.maths || row.Maths || '';
+            const english = row.english || row.English || '';
+            const amharic = row.amharic || row.Amharic || '';
+            const total = row.total || row.Total || '';
+            const average = row.average || row.Average || '';
+            const rank = row.rank || row.Rank || '';
+
+            if (studentId && fullName) {
+                stmt.run(String(studentId), String(fullName), String(grade), String(section), String(maths), String(english), String(amharic), String(total), String(average), String(rank));
+                count++;
+            }
+        });
+
+        stmt.finalize((err) => {
+            if (err) {
+                return res.status(500).json({ error: 'ዳታቤዝ ላይ ማስቀመጥ አልተቻለም: ' + err.message });
+            }
+            res.json({ message: `በተሳካ ሁኔታ ${count} ተማሪዎች ተመዝግበዋል!` });
+        });
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'ስህተት ተፈጥሯል: ' + e.message });
+    }
 });
 
 // ሰርቨሩን ማስጀመር
