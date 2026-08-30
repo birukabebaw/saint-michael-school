@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የአስተዳዳሪ ገጽ - Saint Michael School</title>
+    <title>Saint Michael School - የአስተዳዳሪ መቆጣጠሪያ</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1e3a8a; margin-bottom: 20px; }
-        .login-box { max-width: 400px; margin: 40px auto; padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #1e3a8a; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        button:hover { background-color: #1e40af; }
-        #errorMsg { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1e3a8a; margin-bottom: 25px; }
+        
+        /* ሎጊን ፎርም ዲዛይን */
+        .login-box { max-width: 400px; margin: 40px auto; padding: 25px; background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        
+        /* አረንጓዴው ቁልፍ (እንደ ፎርሙ ዲዛይን) */
+        button { background-color: #2e8b57; color: white; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: background 0.3s; }
+        button:hover { background-color: #246b43; }
+        
+        #errorMsg { color: red; text-align: center; margin-top: 12px; font-weight: bold; }
+        
+        /* አድሚን ዳሽቦርድ (የይለፍ ቃል ከገባ በኋላ የሚታየው) */
         .admin-content { display: none; margin-top: 20px; }
-        .admin-content h3 { color: #8b0000; margin-bottom: 5px; font-size: 20px; }
+        .admin-content h3 { color: #1e3a8a; margin-bottom: 5px; font-size: 22px; }
         .admin-content p { color: #555; margin-bottom: 20px; font-size: 15px; }
+        
+        /* ሰንጠረዥ ዲዛይን */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px; }
         th { background-color: #1e3a8a; color: white; }
@@ -26,7 +35,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>የአስተዳዳሪ ማረጋገጫ (Admin Login)</h2>
+        <h2>Saint Michael School - የአስተዳዳሪ ማረጋገጫ (Admin Login)</h2>
         
         <!-- የይለፍ ቃል መጠየቂያ ፎርም -->
         <div id="loginBox" class="login-box">
@@ -38,10 +47,10 @@
             <div id="errorMsg"></div>
         </div>
 
-        <!-- ትክክለኛውን የይለፍ ቃል ከገባ በኋላ የሚታየው የአስተዳዳሪ ዳሽቦርድ -->
+        <!-- ትክክለኛውን የይለፍ ቃል ከገባ በኋላ የሚታየው የአስተዳዳሪ ዳሽቦርድ እና ሰንጠረዥ -->
         <div id="adminContent" class="admin-content">
-            <h3>እንኳን ደህና መጡ፥ አስተዳዳሪ!</h3>
-            <p>የተመዘገቡ ተማሪዎች እና ሪሲፕቶች እዚህ ይታያሉ (እዚህ ጋር ሰንጠረዡን ወይም መረጃ ማሳያውን ያስገቡ)</p>
+            <h3>እንኳን ደህና መጡ፣ አስተዳዳሪ!</h3>
+            <p>የተመዘገቡ ተማሪዎች እና የባንክ ሪሲፕት መረጃዎች ከዚህ በታች ይታያሉ።</p>
 
             <div style="overflow-x: auto;">
                 <table>
@@ -85,7 +94,7 @@
                     return;
                 }
 
-                // ሎጊን ስኬት ሲሆን
+                // ሎጊን ስኬት ሲሆን ፎርሙን ደብቆ ሰንጠረዡን ማሳየት
                 document.getElementById('loginBox').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
 
@@ -106,7 +115,7 @@
                 tbody.innerHTML = '';
 
                 if (students.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">ምንም የተመዘገበ ተማሪ የለም</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">ምንም የተመዘገበ ተማሪ አልተገኘም</td></tr>';
                     return;
                 }
 
