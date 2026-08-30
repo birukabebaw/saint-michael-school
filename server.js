@@ -37,7 +37,6 @@ db.run(`CREATE TABLE IF NOT EXISTS students (
     receiptFileName TEXT,
     receiptFileData TEXT
 )`, () => {
-    // ቀድሞ የነበረ ዳታቤዝ ከሆነ አዲሶቹ ኮለኖች ከሌሉ በራሱ ይጨምራቸዋል
     db.run(`ALTER TABLE students ADD COLUMN receiptFileName TEXT`, () => {});
     db.run(`ALTER TABLE students ADD COLUMN receiptFileData TEXT`, () => {});
 });
