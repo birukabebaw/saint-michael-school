@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የተማሪዎች ሪሲፕት ማመላከቻ - Saint Michael School</title>
+    <title id="pageTitle">የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ - Saint Michael School</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,6 +16,11 @@
             color: white;
             padding: 15px 30px;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-links {
+            display: flex;
             gap: 20px;
         }
         nav a {
@@ -25,6 +30,13 @@
         }
         nav a:hover {
             text-decoration: underline;
+        }
+        .lang-switch select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
         }
         .container {
             max-width: 650px;
@@ -62,7 +74,7 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        button {
+        button.search-btn {
             width: 100%;
             background-color: #8b0000;
             color: white;
@@ -74,7 +86,7 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-        button:hover {
+        button.search-btn:hover {
             background-color: #a52a2a;
         }
         #errorMsg {
@@ -111,47 +123,54 @@
     </style>
 </head>
 <body>
-    
+
+        
     <header style="background: #1b365d; color: white; padding: 15px; text-align: center;">
         <h2>ደብረ ምሕረት ቅዱስ ሚካኤል አካዳሚ</h2>
     </header>
 
     <nav>
-        <a href="homepage.html">Home</a>
-        <a href="result.html">Check Result</a>
-        <a href="contact.html">contact</a>
-        <a href="photos.html">photos</a>
+        <div class="nav-links">
+            <a href="homepage.html" data-am="መነሻ" data-en="Home">መነሻ</a>
+            <a href="result.html" data-am="ውጤት/ሪሲፕት" data-en="Check Result">ውጤት/ሪሲፕት</a>
+            <a href="contact.html" data-am="ያግኙን" data-en="Contact">ያግኙን</a>
+            <a href="photos.html" data-am="ፎቶዎች" data-en="Photos">ፎቶዎች</a>
+        </div>
+        <div class="lang-switch">
+            <select id="langSelect" onchange="changeLanguage()">
+                <option value="am"> አማርኛ</option>
+                <option value="en"> English</option>
+            </select>
+        </div>
     </nav>
 
     <div class="container">
-        <h2>የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ</h2>
-       
-
+        <h2 id="mainHeading">የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ</h2>
         <div class="form-group">
-            <label for="studentId">የተማሪ መለያ ቁጥር (Student ID) *</label>
+            <label for="studentId" id="labelId">የተማሪ መለያ ቁጥር (Student ID) *</label>
             <input type="text" id="studentId" placeholder="ለምሳሌ፡ sms 1">
         </div>
 
         <div class="form-group">
-            <label for="searchName">የተማሪ ሙሉ ስም (Full Name) *</label>
+            <label for="searchName" id="labelName">የተማሪ ሙሉ ስም (Full Name) *</label>
             <input type="text" id="searchName" placeholder="የተማሪውን ሙሉ ስም ያስገቡ">
         </div>
 
-        <button onclick="checkResult()">መረጃ ፈልግ (Search)</button>
+        <button class="search-btn" onclick="checkResult()" id="searchBtn">መረጃ ፈልግ (Search)</button>
 
         <div id="errorMsg"></div>
 
         <!-- ሪሲፕት ምስሉን እና መረጃውን የሚያሳይ ካርድ -->
         <div id="resultCard" class="result-card">
-            <h3>የተማሪ ምዝገባ እና የባንክ ሪሲፕት</h3>
-            <div class="result-row"><span>መለያ ቁጥር (ID):</span> <strong id="resId"></strong></div>
-            <div class="result-row"><span>ሙሉ ስም:</span> <strong id="resName"></strong></div>
-            <div class="result-row"><span>ክፍል (Grade & Section):</span> <strong id="resGradeSec"></strong></div>
-            <div class="result-row"><span>የባንክ ሪሲፕት ስም:</span> <strong id="resFileName"></strong></div>
+            <h3 id="cardTitle">የተማሪ ምዝገባ እና የባንክ ሪሲፕት</h3>
+            <div class="result-row"><span id="tId">መለያ ቁጥር (ID):</span> <strong id="resId"></strong></div>
+            <div class="result-row"><span id="tName">ሙሉ ስም:</span> <strong id="resName"></strong></div>
+            <div class="result-row"><span id="tGrade">ክፍል (Grade & Section):</span> <strong id="resGradeSec"></strong></div>
+            <div class="result-row"><span id="tFile">የባንክ ሪሲፕት ስም:</span> <strong id="resFileName"></strong></div>
             
             <!-- የባንክ ሪሲፕት ምስል የሚታይበት ቦታ -->
             <div style="margin-top: 20px; text-align: center;">
-                <p style="font-weight: bold; color: #1e3a8a; margin-bottom: 10px;">የባንክ ማረጋገጫ ሪሲፕት (Bank Receipt Image):</p>
+                <p id="tReceiptLabel" style="font-weight: bold; color: #1e3a8a; margin-bottom: 10px;">የባንክ ማረጋገጫ ሪሲፕት (Bank Receipt Image):</p>
                 <img id="resReceiptImg" src="" alt="Bank Receipt" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
                 <p id="noReceiptText" style="color: #777; display: none;">ምንም ሪሲፕት ፋይል አልተገኘም</p>
             </div>
@@ -159,6 +178,79 @@
     </div>
 
     <script>
+        const translations = {
+            am: {
+                pageTitle: "የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ - Saint Michael School",
+                mainHeading: "የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ",
+                subHeading: "ሰይንት ሚካኤል ቅድስት ማርያም አክሱም",
+                labelId: "የተማሪ መለያ ቁጥር (Student ID) *",
+                placeholderId: "ለምሳሌ፡ sms 1",
+                labelName: "የተማሪ ሙሉ ስም (Full Name) *",
+                placeholderName: "የተማሪውን ሙሉ ስም ያስገቡ",
+                searchBtn: "መረጃ ፈልግ (Search)",
+                cardTitle: "የተማሪ ምዝገባ እና የባንክ ሪሲፕት",
+                tId: "መለያ ቁጥር (ID):",
+                tName: "ሙሉ ስም:",
+                tGrade: "ክፍል (Grade & Section):",
+                tFile: "የባንክ ሪሲፕት ስም:",
+                tReceiptLabel: "የባንክ ማረጋገጫ ሪሲፕት (Bank Receipt Image):",
+                noReceiptText: "ምንም ሪሲፕት ፋይል አልተገኘም",
+                emptyFieldsError: "እባክዎ መታወቂያ ቁጥር እና ሙሉ ስም ያስገቡ!",
+                notFoundError: "የተማሪው መረጃ አልተገኘም!",
+                serverError: "ከሰርቨር ጋር መገናኘት አልተቻለም (NetworkError)"
+            },
+            en: {
+                pageTitle: "Student Info & Receipt Portal - Saint Michael School",
+                mainHeading: "Student Info & Receipt Portal",
+                subHeading: "Saint Michael St. Mary Aksum",
+                labelId: "Student ID *",
+                placeholderId: "e.g. sms 1",
+                labelName: "Full Name *",
+                placeholderName: "Enter student full name",
+                searchBtn: "Search Result",
+                cardTitle: "Student Registration & Bank Receipt",
+                tId: "Student ID:",
+                tName: "Full Name:",
+                tGrade: "Grade & Section:",
+                tFile: "Bank Receipt File Name:",
+                tReceiptLabel: "Bank Receipt Image:",
+                noReceiptText: "No receipt file found",
+                emptyFieldsError: "Please enter both Student ID and Full Name!",
+                notFoundError: "Student information not found!",
+                serverError: "Could not connect to server (NetworkError)"
+            }
+        };
+
+        let currentLang = 'am';
+
+        function changeLanguage() {
+            const select = document.getElementById('langSelect');
+            currentLang = select.value;
+            const t = translations[currentLang];
+
+            // Navbar links translation
+            document.querySelectorAll('nav .nav-links a').forEach(a => {
+                a.innerText = a.getAttribute(`data-${currentLang}`);
+            });
+
+            // Page texts translation
+            document.getElementById('pageTitle').innerText = t.pageTitle;
+            document.getElementById('mainHeading').innerText = t.mainHeading;
+            document.getElementById('subHeading').innerText = t.subHeading;
+            document.getElementById('labelId').innerText = t.labelId;
+            document.getElementById('studentId').placeholder = t.placeholderId;
+            document.getElementById('labelName').innerText = t.labelName;
+            document.getElementById('searchName').placeholder = t.placeholderName;
+            document.getElementById('searchBtn').innerText = t.searchBtn;
+            document.getElementById('cardTitle').innerText = t.cardTitle;
+            document.getElementById('tId').innerText = t.tId;
+            document.getElementById('tName').innerText = t.tName;
+            document.getElementById('tGrade').innerText = t.tGrade;
+            document.getElementById('tFile').innerText = t.tFile;
+            document.getElementById('tReceiptLabel').innerText = t.tReceiptLabel;
+            document.getElementById('noReceiptText').innerText = t.noReceiptText;
+        }
+
         async function checkResult() {
             const studentId = document.getElementById('studentId').value.trim();
             const searchName = document.getElementById('searchName').value.trim();
@@ -166,6 +258,7 @@
             const resultCard = document.getElementById('resultCard');
             const receiptImg = document.getElementById('resReceiptImg');
             const noReceiptText = document.getElementById('noReceiptText');
+            const t = translations[currentLang];
 
             errorMsg.innerText = '';
             resultCard.style.display = 'none';
@@ -173,7 +266,7 @@
             noReceiptText.style.display = 'none';
 
             if (!studentId || !searchName) {
-                errorMsg.innerText = 'እባክዎ መታወቂያ ቁጥር እና ሙሉ ስም ያስገቡ!';
+                errorMsg.innerText = t.emptyFieldsError;
                 return;
             }
 
@@ -189,7 +282,7 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    errorMsg.innerText = data.error || 'የተማሪው መረጃ አልተገኘም!';
+                    errorMsg.innerText = data.error || t.notFoundError;
                     return;
                 }
 
@@ -197,7 +290,7 @@
                 document.getElementById('resId').innerText = data.studentId || '-';
                 document.getElementById('resName').innerText = data.fullName || '-';
                 document.getElementById('resGradeSec').innerText = `${data.grade || ''} ${data.section || ''}`;
-                document.getElementById('resFileName').innerText = data.receiptFileName || 'አልተገኘም';
+                document.getElementById('resFileName').innerText = data.receiptFileName || (currentLang === 'am' ? 'አልተገኘም' : 'Not Found');
 
                 // የባንክ ሪሲፕት ምስል ካለ ማሳየት
                 if (data.receiptFileData) {
@@ -211,7 +304,7 @@
 
             } catch (error) {
                 console.error('ስህተት ተፈጥሯል:', error);
-                errorMsg.innerText = 'ከሰርቨር ጋር መገናኘት አልተቻለም (NetworkError)';
+                errorMsg.innerText = t.serverError;
             }
         }
     </script>
