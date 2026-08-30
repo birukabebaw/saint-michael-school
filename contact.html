@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ደብረ ምሕረት ቅዱስ ሚካኤል አካዳሚ - አግኙን እና መገኛችን</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        /* ናቪጌሽን ባር */
+        .navbar {
+            background-color: #2c3e50;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .navbar a:hover, .navbar a.active {
+            color: #2ecc71;
+        }
+        #google_translate_element select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        h3 {
+            color: #1b365d;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+        p {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    
+    <header style="background: #1b365d; color: white; padding: 15px; text-align: center;">
+        <h2>ደብረ ምሕረት ቅዱስ ሚካኤል አካዳሚ</h2>
+    </header>
+    
+    <!-- ናቪጌሽን ባር ከቋንቋ መራጫ ጋር -->
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="homepage.html">Home</a>
+            <a href="result.html">Check Result</a>
+            <a href="photos.html">Photos</a>
+            <a href="contact.html" class="active">Contact</a>
+        </div>
+        <div id="google_translate_element"></div>
+    </div>
+
+    <!-- Contact Section with Map at Abay Mado, Bahir Dar -->
+    <div class="container">
+        <h3>አግኙን እና መገኛችን (Contact Us & Location)</h3>
+        
+        <p><strong>አድራሻ:</strong> አባይ ማዶ, ባህር ዳር, ኢትዮጵያ (Abay Mado, Bahir Dar)</p>
+        <p><strong>ስልክ ቁጥር:</strong> +251-906898261</p>
+        <p><strong>ኢሜል:</strong> birukabebaw67@gmail.com</p>
+
+        <!-- Google Map Embedded View for Abay Mado, Bahir Dar -->
+        <div style="margin-top: 20px;">
+            <h4 style="color: #333; margin-bottom: 10px;">የትምህርት ቤታችን ካርታ (Abay Mado, Bahir Dar saint michael school)</h4>
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3902.5!2d37.38!3d11.59!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x16447d375d6d6b89%3A0xcb3a4a51e138f2b6!2sAbay%20Mado%2C%20Bahir%20Dar!5e0!3m2!1sen!2set!4v1710000000000!5m2!1sen!2set" 
+                width="100%" 
+                height="250" 
+                style="border:0; border-radius: 8px;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+<footer style="color: red; background-color: #1b365d;">produced by biruk</footer>
+    <!-- የጉግል ትርጉም ስክሪፕት -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'am', 
+                includedLanguages: 'am,en,om,ti', 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
