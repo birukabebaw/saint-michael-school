@@ -5,238 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saint Michael School - Admin Dashboard</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        input[type="text"], input[type="password"], input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .password-container input {
-            width: 100%;
-            padding-right: 40px;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
-            width: auto;
-            margin: 0;
-            padding: 0;
-        }
-        button.action-btn {
-            width: 100%;
-            background-color: #28a745;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button.action-btn:hover {
-            background-color: #218838;
-        }
-        .excel-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px dashed #ddd;
-        }
-        #responseMsg {
-            margin-top: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-        #loginOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 350px;
-            text-align: center;
-        }
-        .hidden {
-            display: none;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; direction: ltr; }
+        .container { max-width: 700px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; }
+        button:hover { background-color: #219653; }
+        .excel-btn { background-color: #2980b9; }
+        .excel-btn:hover { background-color: #1f618d; }
+        hr { border: 0; border-top: 2px dashed #eee; margin: 30px 0; }
+        #msg, #excelMsg { margin-top: 15px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- የአድሚን መግቢያ የይለፍ ቃል ሳጥን -->
-    <div id="loginOverlay">
-        <div class="login-box">
-            <h3>የአድሚን መግቢያ</h3>
-            <p>እባክዎ የይለፍ ቃል ያስገቡ</p>
-            <div class="form-group password-container">
-                <input type="password" id="adminPassword" placeholder="የይለፍ ቃል">
-                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
-            </div>
-            <button class="action-btn" onclick="checkPassword()">ግባ</button>
-            <p id="loginError" style="color: red; font-size: 14px; margin-top: 10px;"></p>
-        </div>
+<div class="container">
+    <h2>Saint Michael School - የአድሚን መቆጣጠሪያ</h2>
+
+    <!-- Single Student & Receipt Upload Form -->
+    <div class="form-group">
+        <label>የተማሪ መታወቂያ (Student ID):</label>
+        <input type="text" id="studentId" placeholder="ለምሳሌ፡ SMS/001/16">
     </div>
 
-    <!-- ዋናው የአድሚን ዳሽቦርድ -->
-    <div class="container hidden" id="adminContent">
-        <h2>የቅዱስ ሚካኤል ትምህርት ቤት - አስተዳደር ገጽ</h2>
-
-        <div class="form-group">
-            <label for="studentId">የተማሪ መለያ ቁጥር (Student ID):</label>
-            <input type="text" id="studentId" placeholder="ለምሳሌ: SMS-001">
-        </div>
-
-        <div class="form-group">
-            <label for="fullName">የተማሪ ሙሉ ስም:</label>
-            <input type="text" id="fullName" placeholder="ሙሉ ስም ያስገቡ">
-        </div>
-
-        <div class="form-group">
-            <label for="grade">ክፍል (Grade):</label>
-            <input type="text" id="grade" placeholder="ለምሳሌ: 9, 10 ወይም KG-3">
-        </div>
-
-        <div class="form-group">
-            <label for="section">ሴክሽን (Section):</label>
-            <input type="text" id="section" placeholder="ለምሳሌ: A, B ወይም Blue">
-        </div>
-
-        <div class="form-group">
-            <label for="fileInput">ፋይል ወይም ደረሰኝ ምረጥ:</label>
-            <input type="file" id="fileInput">
-        </div>
-
-        <button class="action-btn" onclick="uploadSingleStudent()">ተማሪውን መዝግብ</button>
-
-        <div class="excel-section">
-            <h3>ብዙ ተማሪዎችን በ Excel (Bulk) ለመጫን</h3>
-            <p style="font-size: 13px; color: #666;">(በኤክሴል ፋይሉ ውስጥ <b>studentId</b>, <b>fullName</b>, <b>grade</b>, <b>section</b> የሚሉ  തലക്കെቶች/Headers ሊኖሩት ይገባል)</p>
-            <div class="form-group">
-                <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
-            </div>
-            <button class="action-btn" onclick="uploadExcel()" style="background-color: #007bff;">Excel ጫን እና መዝግብ</button>
-        </div>
-
-        <div id="responseMsg"></div>
+    <div class="form-group">
+        <label>ሙሉ ስም (Full Name):</label>
+        <input type="text" id="fullName" placeholder="የተማሪው ሙሉ ስም">
     </div>
+
+    <div class="form-group">
+        <label>ክፍል (Grade):</label>
+        <input type="text" id="grade" placeholder="ለምሳሌ፡ 9">
+    </div>
+
+    <div class="form-group">
+        <label>ሴክሽን (Section):</label>
+        <input type="text" id="section" placeholder="ለምሳሌ፡ A">
+    </div>
+
+    <div class="form-group">
+        <label>የባንክ ማረጋገጫ ወይም receipt ፎቶ (Bank Receipt/Image):</label>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <button onclick="uploadSingleStudent()">ተማሪውን መዝግብ</button>
+    <div id="msg"></div>
+
+    <hr>
+
+    <!-- Bulk Excel Upload Form -->
+    <h3>ብዙ ተማሪዎችን በ Excel (Bulk) ለመጫን</h3>
+    <p style="font-size: 13px; color: #666;">(በኤክሴል ፋይል ውስጥ <code>studentId</code>, <code>fullName</code>, <code>grade</code>, <code>section</code> የሚሉ തലጌዎች/Headers ሊኖሩ ይገባል)</p>
+    
+    <div class="form-group">
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls">
+    </div>
+
+    <button class="excel-btn" onclick="uploadExcelFile()">Excel ጭን እና መዝግብ</button>
+    <div id="excelMsg"></div>
+</div>
 
 <script>
-    const CORRECT_PASSWORD = "admin123";
-
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('adminPassword');
-        const toggleBtn = document.querySelector('.toggle-password');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleBtn.innerText = '🙈';
-        } else {
-            passwordInput.type = 'password';
-            toggleBtn.innerText = '👁️';
-        }
-    }
-
-    function checkPassword() {
-        const passwordInput = document.getElementById('adminPassword').value;
-        const errorMsg = document.getElementById('loginError');
-
-        if (passwordInput === CORRECT_PASSWORD) {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('adminContent').classList.remove('hidden');
-        } else {
-            errorMsg.innerText = 'የይለፍ ቃሉ ስህተት ነው! እባክዎ እንደገና ይሞክሩ።';
-        }
-    }
-
-    document.getElementById('adminPassword').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') checkPassword();
-    });
-
-    async function uploadSingleStudent() {
-        const studentId = document.getElementById('studentId').value.trim();
-        const fullName = document.getElementById('fullName').value.trim();
-        const grade = document.getElementById('grade').value.trim();
-        const section = document.getElementById('section').value.trim();
-        const fileInput = document.getElementById('fileInput');
-        const msgDiv = document.getElementById('responseMsg');
-
-        if (!studentId || !fullName) {
-            alert('እባክዎ መለያ ቁጥር እና ስም ያስገቡ!');
-            return;
-        }
-
-        let fileName = '';
-        let fileData = '';
-
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            fileName = file.name;
-            fileData = await toBase64(file);
-        }
-
-        const data = { studentId, fullName, grade, section, fileName, fileData };
-
-        try {
-const apiUrl = 'https://saint-michael-school.onrender.com/api/upload';
-const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            msgDiv.style.color = response.ok ? 'green' : 'red';
-            msgDiv.innerText = result.message || result.error;
-        } catch (err) {
-            msgDiv.style.color = 'red';
-            msgDiv.innerText = 'ሰርቨር ጋር መገናኘት አልተቻለም: ' + err.message;
-        }
-    }
+    // ሎካል ወይም ኦንላይን መሆኑን በራሱ ለይቶ ትክክለኛውን ሊንክ የሚጠቀም ፖሊሲ
+    const getApiUrl = () => {
+        return window.location.hostname.includes('localhost') 
+            ? 'http://localhost:3000/api/upload' 
+            : '/api/upload';
+    };
 
     function toBase64(file) {
         return new Promise((resolve, reject) => {
@@ -247,23 +84,81 @@ const response = await fetch(apiUrl, {
         });
     }
 
-    async function uploadExcel() {
-        const fileInput = document.getElementById('excelFileInput');
-        const msgDiv = document.getElementById('responseMsg');
+    async function uploadSingleStudent() {
+        const studentId = document.getElementById('studentId').value.trim();
+        const fullName = document.getElementById('fullName').value.trim();
+        const grade = document.getElementById('grade').value.trim();
+        const section = document.getElementById('section').value.trim();
+        const fileInput = document.getElementById('fileInput');
+        const msgDiv = document.getElementById('msg');
 
-        if (fileInput.files.length === 0) {
-            alert('እባክዎ መጀመሪያ የ Excel ፋይል ይምረጡ!');
+        if (!studentId || !fullName) {
+            msgDiv.style.color = 'red';
+            msgDiv.innerText = 'እባክዎ መታወቂያ እና ስም ያስገቡ!';
             return;
         }
 
-        const formData = new FormData();
-        formData.append('excelFile', fileInput.files[0]);
+        let fileName = '';
+        let fileData = '';
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileName = file.name;
+            try {
+                fileData = await toBase64(file);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        const data = { studentId, fullName, grade, section, fileName, fileData };
 
         try {
-            const response = await fetch('http://localhost:3000/api/upload-excel', {
+            msgDiv.style.color = 'blue';
+            msgDiv.innerText = ' በመጫን ላይ ነው...';
+
+            const response = await fetch(getApiUrl(), {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
+
+            const result = await response.json();
+            msgDiv.style.color = response.ok ? 'green' : 'red';
+            msgDiv.innerText = result.message || result.error;
+        } catch (err) {
+            msgDiv.style.color = 'red';
+            msgDiv.innerText = 'ሰርቨር ጋር መገናኘት አልቻለም: ' + err.message;
+        }
+    }
+
+    async function uploadExcelFile() {
+        const excelInput = document.getElementById('excelFileInput');
+        const msgDiv = document.getElementById('excelMsg');
+
+        if (excelInput.files.length === 0) {
+            msgDiv.style.color = 'red';
+            msgDiv.innerText = 'እባክዎ የኤክሴል ፋይል ይምረጡ!';
+            return;
+        }
+
+        const file = excelInput.files[0];
+        try {
+            const base64Data = await toBase64(file);
+            // ከBase64 ፊት ለፊት ያለውን የኮድ ክፍል (data:...;base64,) ማስወገድ
+            const base64Clean = base64Data.split(',')[1];
+
+            const data = { fileData: base64Clean };
+
+            msgDiv.style.color = 'blue';
+            msgDiv.innerText = 'ኤክሴል ፋይሉ በመጫን ላይ ነው...';
+
+            const response = await fetch(getApiUrl(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
             const result = await response.json();
             msgDiv.style.color = response.ok ? 'green' : 'red';
             msgDiv.innerText = result.message || result.error;
