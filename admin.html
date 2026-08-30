@@ -223,7 +223,8 @@
         const data = { studentId, fullName, grade, section, fileName, fileData };
 
         try {
-            const response = await fetch('http://localhost:3000/api/upload', {
+      const apiUrl = window.location.hostname.includes('localhost') ? 'http://localhost:3000/api/upload' : '/api/upload';
+const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
