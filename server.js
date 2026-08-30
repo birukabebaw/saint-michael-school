@@ -33,7 +33,9 @@ db.run(`CREATE TABLE IF NOT EXISTS students (
     amharic TEXT,
     total TEXT,
     average TEXT,
-    rank TEXT
+    rank TEXT,
+    receiptFileName TEXT,
+    receiptFileData TEXT
 )`);
 
 // 1. መነሻ ገጹን (Homepage) ማሳየት
@@ -41,14 +43,31 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
-// 2. የኤክሴል ፋይል ተቀብሎ ዳታቤዝ ውስጥ መመዝገቢያ አድራሻ (API Route)
+// 2. የተማሪ ምዝገባ እና የኤክሴል ፋይል መቀበያ አድራሻ (API Route)
 app.post('/api/upload', (req, res) => {
     try {
-        const { fileData } = req.body;
+        const { studentId, fullName, grade, section, fileName, fileData } = req.body;
+
         if (!fileData) {
             return res.status(400).json({ error: 'እባክዎ ፋይል ይምረጡ!' });
         }
 
+        // ოდ እዚህ ጋር የተማሪ መታወቂያ (studentId) ካለ - ነጠላ ተማሪ ከባንክ receipt ጋር ይመዝገብ
+        if (studentId && fullName) {
+            db.run(
+                `INSERT OR REPLACE INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`,
+                [String(studentId), String(fullName), String(grade || ''), String(section || ''), String(fileName || ''), String(fileData)],
+                function (err) {
+                    if (err) {
+                        return res.status(500).json({ error: 'ዳታቤዝ ላይ ማስቀመጥ አልተቻለም: ' + err.message });
+                    }
+                    res.json({ message: `ተማሪ ${fullName} በተሳካ ሁኔታ ተመዝግቧል!` });
+                }
+            );
+            return;
+        }
+
+        // ካልሆነ ግን - የኤክሴል (Bulk) ፋይል ነው ማለት ነው
         const buffer = Buffer.from(fileData, 'base64');
         const workbook = XLSX.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
@@ -63,10 +82,10 @@ app.post('/api/upload', (req, res) => {
 
         let count = 0;
         rows.forEach(row => {
-            const studentId = row.studentId || row.StudentId || row.ID || row.id;
-            const fullName = row.fullName || row.FullName || row.Name || row.name;
-            const grade = row.grade || row.Grade || '';
-            const section = row.section || row.Section || '';
+            const sId = row.studentId || row.StudentId || row.ID || row.id;
+            const fName = row.fullName || row.FullName || row.Name || row.name;
+            const gradeVal = row.grade || row.Grade || '';
+            const secVal = row.section || row.Section || '';
             const maths = row.maths || row.Maths || '';
             const english = row.english || row.English || '';
             const amharic = row.amharic || row.Amharic || '';
@@ -74,8 +93,8 @@ app.post('/api/upload', (req, res) => {
             const average = row.average || row.Average || '';
             const rank = row.rank || row.Rank || '';
 
-            if (studentId && fullName) {
-                stmt.run(String(studentId), String(fullName), String(grade), String(section), String(maths), String(english), String(amharic), String(total), String(average), String(rank));
+            if (sId && fName) {
+                stmt.run(String(sId), String(fName), String(gradeVal), String(secVal), String(maths), String(english), String(amharic), String(total), String(average), String(rank));
                 count++;
             }
         });
@@ -84,7 +103,7 @@ app.post('/api/upload', (req, res) => {
             if (err) {
                 return res.status(500).json({ error: 'ዳታቤዝ ላይ ማስቀመጥ አልተቻለም: ' + err.message });
             }
-            res.json({ message: `በተሳካ ሁኔታ ${count} ተማሪዎች ተመዝግበዋል!` });
+            res.json({ message: `በተሳካ ሁኔታ ${count} ተማሪዎች ከኤክሴል ተመዝግበዋል!` });
         });
 
     } catch (e) {
