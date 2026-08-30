@@ -51,11 +51,31 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
+// Student Registration API Route (የተማሪ ምዝገባ ማቀናበሪያ)
+app.post('/api/register', (req, res) => {
+    const { studentId, fullName, grade, section, receiptFileName, receiptFileData } = req.body;
+
+    if (!studentId || !fullName) {
+        return res.status(400).json({ error: 'እባክዎ መታወቂያ እና ሙሉ ስም ያስገቡ!' });
+    }
+
+    const query = `INSERT INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`;
+    
+    db.run(query, [studentId.trim(), fullName.trim(), grade, section, receiptFileName, receiptFileData], function(err) {
+        if (err) {
+            console.error('Registration error:', err.message);
+            if (err.message.includes('UNIQUE constraint failed')) {
+                return res.status(400).json({ error: 'ይህ የተማሪ መታወቂያ ቁጥር ቀድሞ ተመዝግቧል!' });
+            }
+            return res.status(500).json({ error: 'የሰርቨር ስህተት ተፈጥሯል' });
+        }
+        res.json({ success: true, message: 'ተማሪው በተሳካ ሁኔታ ተመዝግቧል!' });
+    });
+});
+
 // Admin Login API Route
 app.post('/api/admin/login', (req, res) => {
     const { password } = req.body;
-    
-    // እዚህ ጋር የአስተዳዳሪውን የይለፍ ቃል መቀየር ይችላሉ
     const ADMIN_PASSWORD = 'admin123'; 
 
     if (password === ADMIN_PASSWORD) {
@@ -65,7 +85,7 @@ app.post('/api/admin/login', (req, res) => {
     }
 });
 
-// Admin Get All Students API Route (for the admin table)
+// Admin Get All Students API Route
 app.get('/api/admin/students', (req, res) => {
     db.all("SELECT * FROM students ORDER BY id DESC", [], (err, rows) => {
         if (err) {
@@ -76,7 +96,7 @@ app.get('/api/admin/students', (req, res) => {
     });
 });
 
-// Result / Receipt Check API Route (used by homepage/search)
+// Result / Receipt Check API Route
 app.post('/api/result', (req, res) => {
     const { studentId, fullName } = req.body;
 
