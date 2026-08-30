@@ -55,7 +55,6 @@ app.post('/api/upload', (req, res) => {
             return res.status(400).json({ error: 'እባክዎ ፋይል ይምረጡ!' });
         }
 
-        // የተማሪ መታወቂያ (studentId) ካለ - ነጠላ ተማሪ ከባንክ receipt ጋር ይመዝገብ
         if (studentId && fullName) {
             db.run(
                 `INSERT OR REPLACE INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -70,7 +69,6 @@ app.post('/api/upload', (req, res) => {
             return;
         }
 
-        // ካልሆነ ግን - የኤክሴል (Bulk) ፋይል ነው ማለት ነው
         const buffer = Buffer.from(fileData, 'base64');
         const workbook = XLSX.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
@@ -113,6 +111,29 @@ app.post('/api/upload', (req, res) => {
         console.error(e);
         res.status(500).json({ error: 'ስህተት ተፈጥሯል: ' + e.message });
     }
+});
+
+// 3. የተማሪ ውጤት ማረጋገጫ አድራሻ (Result API Route)
+app.post('/api/result', (req, res) => {
+    const { studentId, fullName } = req.body;
+
+    if (!studentId || !fullName) {
+        return res.status(400).json({ error: 'እባክዎ የተማሪ መታወቂያ እና ሙሉ ስም ያስገቡ!' });
+    }
+
+    db.get(
+        `SELECT * FROM students WHERE studentId = ? AND LOWER(fullName) = LOWER(?)`,
+        [String(studentId).trim(), String(fullName).trim()],
+        (err, row) => {
+            if (err) {
+                return res.status(500).json({ error: 'የዳታቤዝ ስህተት: ' + err.message });
+            }
+            if (!row) {
+                return res.status(404).json({ error: 'የተማሪው መረጃ አልተገኘም! እባክዎ መረጃዎን በትክክል ያስገቡ።' });
+            }
+            res.json(row);
+        }
+    );
 });
 
 // ሰርቨሩን ማስጀመር
