@@ -22,7 +22,7 @@ const db = new sqlite3.Database('./saint_michael_school.db', (err) => {
     else console.log('SQLite ዳታቤዝ በተሳካ ሁኔታ ተገናኝቷል!');
 });
 
-// የሰንጠረዥ (Table) ማዋቀሪያ
+// የሰንጠረዥ (Table) ማዋቀሪያ እና አዳዲስ ኮለኖች በራስሰር መጨመር
 db.run(`CREATE TABLE IF NOT EXISTS students (
     studentId TEXT PRIMARY KEY,
     fullName TEXT,
@@ -36,7 +36,11 @@ db.run(`CREATE TABLE IF NOT EXISTS students (
     rank TEXT,
     receiptFileName TEXT,
     receiptFileData TEXT
-)`);
+)`, () => {
+    // ቀድሞ የነበረ ዳታቤዝ ከሆነ አዲሶቹ ኮለኖች ከሌሉ በራሱ ይጨምራቸዋል
+    db.run(`ALTER TABLE students ADD COLUMN receiptFileName TEXT`, () => {});
+    db.run(`ALTER TABLE students ADD COLUMN receiptFileData TEXT`, () => {});
+});
 
 // 1. መነሻ ገጹን (Homepage) ማሳየት
 app.get('/', (req, res) => {
@@ -52,7 +56,7 @@ app.post('/api/upload', (req, res) => {
             return res.status(400).json({ error: 'እባክዎ ፋይል ይምረጡ!' });
         }
 
-        // ოდ እዚህ ጋር የተማሪ መታወቂያ (studentId) ካለ - ነጠላ ተማሪ ከባንክ receipt ጋር ይመዝገብ
+        // የተማሪ መታወቂያ (studentId) ካለ - ነጠላ ተማሪ ከባንክ receipt ጋር ይመዝገብ
         if (studentId && fullName) {
             db.run(
                 `INSERT OR REPLACE INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`,
