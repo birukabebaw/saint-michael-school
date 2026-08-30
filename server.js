@@ -6,9 +6,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+// Middleware - Increased limit to handle image uploads
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from the root directory
 app.use(express.static(path.join(__dirname)));
@@ -51,26 +51,31 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
-// Student Registration API Route (የተማሪ ምዝገባ ማቀናበሪያ)
+// Student Registration API Route
 app.post('/api/register', (req, res) => {
-    const { studentId, fullName, grade, section, receiptFileName, receiptFileData } = req.body;
+    try {
+        const { studentId, fullName, grade, section, receiptFileName, receiptFileData } = req.body;
 
-    if (!studentId || !fullName) {
-        return res.status(400).json({ error: 'እባክዎ መታወቂያ እና ሙሉ ስም ያስገቡ!' });
-    }
-
-    const query = `INSERT INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`;
-    
-    db.run(query, [studentId.trim(), fullName.trim(), grade, section, receiptFileName, receiptFileData], function(err) {
-        if (err) {
-            console.error('Registration error:', err.message);
-            if (err.message.includes('UNIQUE constraint failed')) {
-                return res.status(400).json({ error: 'ይህ የተማሪ መታወቂያ ቁጥር ቀድሞ ተመዝግቧል!' });
-            }
-            return res.status(500).json({ error: 'የሰርቨር ስህተት ተፈጥሯል' });
+        if (!studentId || !fullName) {
+            return res.status(400).json({ error: 'እባክዎ መታወቂያ እና ሙሉ ስም ያስገቡ!' });
         }
-        res.json({ success: true, message: 'ተማሪው በተሳካ ሁኔታ ተመዝግቧል!' });
-    });
+
+        const query = `INSERT INTO students (studentId, fullName, grade, section, receiptFileName, receiptFileData) VALUES (?, ?, ?, ?, ?, ?)`;
+        
+        db.run(query, [studentId.trim(), fullName.trim(), grade, section, receiptFileName, receiptFileData], function(err) {
+            if (err) {
+                console.error('Registration database error:', err.message);
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.status(400).json({ error: 'ይህ የተማሪ መታወቂያ ቁጥር ቀድሞ ተመዝግቧል!' });
+                }
+                return res.status(500).json({ error: 'የዳታቤዝ ስህተት ተፈጥሯል: ' + err.message });
+            }
+            res.json({ success: true, message: 'ተማሪው በተሳካ ሁኔታ ተመዝግቧል!' });
+        });
+    } catch (e) {
+        console.error('Server catch error:', e.message);
+        res.status(500).json({ error: 'የሰርቨር ውስጣዊ ስህተት ተፈጥሯል' });
+    }
 });
 
 // Admin Login API Route
@@ -124,3 +129,11 @@ app.post('/api/result', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+```[cite: 1]
+
+---
+
+### ከዚህ በኋላ ማድረግ የሚጠበቅብዎት፦
+ተርሚናል ላይ ሆነው ትዕዛዞቹን **በተናጠል** ያስገቡ፦
+```bash
+git add .
