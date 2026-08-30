@@ -223,7 +223,7 @@
         const data = { studentId, fullName, grade, section, fileName, fileData };
 
         try {
-      const apiUrl = window.location.hostname.includes('localhost') ? 'http://localhost:3000/api/upload' : '/api/upload';
+const apiUrl = 'https://saint-michael-school.onrender.com/api/upload';
 const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
