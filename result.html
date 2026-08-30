@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Saint Michael School</title>
+    <title>የተማሪዎች ሪሲፕት ማመላከቻ - Saint Michael School</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,7 +27,7 @@
             text-decoration: underline;
         }
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 40px auto;
             background: white;
             padding: 30px;
@@ -111,9 +111,7 @@
     </style>
 </head>
 <body>
-<header style="background: #1b365d; color: white; padding: 15px; text-align: center;">
-        <h2>ደብረ ምሕረት ቅዱስ ሚካኤል አካዳሚ</h2>
-    </header>
+
     <nav>
         <a href="homepage.html">Home</a>
         <a href="result.html">Check Result</a>
@@ -122,7 +120,8 @@
     </nav>
 
     <div class="container">
-        <h2>የተማሪዎች ውጤት ማመላከቻ</h2>
+        <h2>የተማሪዎች መረጃ እና ሪሲፕት ማመላከቻ</h2>
+        <div class="subtitle">ሰይንት ሚካኤል ቅድስት ማርያም አክሱም</div>
 
         <div class="form-group">
             <label for="studentId">የተማሪ መለያ ቁጥር (Student ID) *</label>
@@ -134,21 +133,24 @@
             <input type="text" id="searchName" placeholder="የተማሪውን ሙሉ ስም ያስገቡ">
         </div>
 
-        <button onclick="checkResult()">ውጤት አሳይ (Search Result)</button>
+        <button onclick="checkResult()">መረጃ ፈልግ (Search)</button>
 
         <div id="errorMsg"></div>
 
+        <!-- ሪሲፕት ምስሉን እና መረጃውን የሚያሳይ ካርድ -->
         <div id="resultCard" class="result-card">
-            <h3>የተማሪ ውጤት ዝርዝር</h3>
+            <h3>የተማሪ ምዝገባ እና የባንክ ሪሲፕት</h3>
             <div class="result-row"><span>መለያ ቁጥር (ID):</span> <strong id="resId"></strong></div>
             <div class="result-row"><span>ሙሉ ስም:</span> <strong id="resName"></strong></div>
             <div class="result-row"><span>ክፍል (Grade & Section):</span> <strong id="resGradeSec"></strong></div>
-            <div class="result-row"><span>ሂሳብ (Maths):</span> <strong id="resMaths"></strong></div>
-            <div class="result-row"><span>እንግሊዝኛ (English):</span> <strong id="resEnglish"></strong></div>
-            <div class="result-row"><span>አማርኛ (Amharic):</span> <strong id="resAmharic"></strong></div>
-            <div class="result-row"><span>ድምር (Total):</span> <strong id="resTotal"></strong></div>
-            <div class="result-row"><span>አማካኝ (Average):</span> <strong id="resAverage"></strong></div>
-            <div class="result-row"><span>ደረጃ (Rank):</span> <strong id="resRank"></strong></div>
+            <div class="result-row"><span>የባንክ ሪሲፕት ስም:</span> <strong id="resFileName"></strong></div>
+            
+            <!-- የባንክ ሪሲፕት ምስል የሚታይበት ቦታ -->
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="font-weight: bold; color: #1e3a8a; margin-bottom: 10px;">የባንክ ማረጋገጫ ሪሲፕት (Bank Receipt Image):</p>
+                <img id="resReceiptImg" src="" alt="Bank Receipt" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
+                <p id="noReceiptText" style="color: #777; display: none;">ምንም ሪሲፕት ፋይል አልተገኘም</p>
+            </div>
         </div>
     </div>
 
@@ -158,10 +160,13 @@
             const searchName = document.getElementById('searchName').value.trim();
             const errorMsg = document.getElementById('errorMsg');
             const resultCard = document.getElementById('resultCard');
+            const receiptImg = document.getElementById('resReceiptImg');
+            const noReceiptText = document.getElementById('noReceiptText');
 
-            // ከዚህ ቀደም የነበረውን መልእክት ወይም ውጤት ማጽዳት
             errorMsg.innerText = '';
             resultCard.style.display = 'none';
+            receiptImg.style.display = 'none';
+            noReceiptText.style.display = 'none';
 
             if (!studentId || !searchName) {
                 errorMsg.innerText = 'እባክዎ መታወቂያ ቁጥር እና ሙሉ ስም ያስገቡ!';
@@ -184,18 +189,20 @@
                     return;
                 }
 
-                // የተገኘውን መረጃ በ HTML ካርዱ ላይ መሙላት
+                // መረጃዎችን መሙላት
                 document.getElementById('resId').innerText = data.studentId || '-';
                 document.getElementById('resName').innerText = data.fullName || '-';
                 document.getElementById('resGradeSec').innerText = `${data.grade || ''} ${data.section || ''}`;
-                document.getElementById('resMaths').innerText = data.maths || '-';
-                document.getElementById('resEnglish').innerText = data.english || '-';
-                document.getElementById('resAmharic').innerText = data.amharic || '-';
-                document.getElementById('resTotal').innerText = data.total || '-';
-                document.getElementById('resAverage').innerText = data.average || '-';
-                document.getElementById('resRank').innerText = data.rank || '-';
+                document.getElementById('resFileName').innerText = data.receiptFileName || 'አልተገኘም';
 
-                // የውጤት ካርዱን ማሳየት
+                // የባንክ ሪሲፕት ምስል ካለ ማሳየት
+                if (data.receiptFileData) {
+                    receiptImg.src = data.receiptFileData;
+                    receiptImg.style.display = 'block';
+                } else {
+                    noReceiptText.style.display = 'block';
+                }
+
                 resultCard.style.display = 'block';
 
             } catch (error) {
